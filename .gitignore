@@ -94,4 +94,4 @@ ENV/
 # Cprof
 stats.dat
 
-exmamples/movielens/*
+examples/movielens/*
