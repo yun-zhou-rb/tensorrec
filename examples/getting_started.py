@@ -1,10 +1,10 @@
 from collections import defaultdict
+import time
 import csv
 import numpy
 import random
 from scipy import sparse
 from sklearn.preprocessing import MultiLabelBinarizer
-
 import tensorrec
 
 import logging
@@ -14,6 +14,7 @@ logging.getLogger().setLevel(logging.INFO)
 # NOTE: This expects the ratings.csv file to be in the same folder as this Python file
 # You can download the MovieLens dataset, including ratings.csv, here:
 # https://grouplens.org/datasets/movielens/
+start_time = time.time()
 print('Loading ratings')
 with open('ratings.csv', 'r') as ratings_file:
     ratings_file_reader = csv.reader(ratings_file)
@@ -200,3 +201,5 @@ for m in u432_top_ten_recs:
 print("User 432's held-out movies:")
 for m in sparse_test_ratings_4plus[432].indices:
     print(movie_titles_by_internal_id[m])
+end_time = time.time()
+print(f"{(end_time-start_time)} seconds elasped")
