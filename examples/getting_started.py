@@ -15,6 +15,7 @@ logging.getLogger().setLevel(logging.INFO)
 # You can download the MovieLens dataset, including ratings.csv, here:
 # https://grouplens.org/datasets/movielens/
 start_time = time.time()
+USER_BATCH_SIZE=128
 print('Loading ratings')
 with open('ratings.csv', 'r') as ratings_file:
     ratings_file_reader = csv.reader(ratings_file)
@@ -65,7 +66,8 @@ cf_model = tensorrec.TensorRec(n_components=5)
 print("Training collaborative filter")
 cf_model.fit(interactions=sparse_train_ratings,
              user_features=user_indicator_features,
-             item_features=item_indicator_features)
+             item_features=item_indicator_features,
+             user_batch_size=USER_BATCH_SIZE)
 
 # Create sets of train/test interactions that are only ratings >= 4.0
 sparse_train_ratings_4plus = sparse_train_ratings.multiply(sparse_train_ratings >= 4.0)
@@ -101,7 +103,8 @@ ranking_cf_model = tensorrec.TensorRec(n_components=5,
 ranking_cf_model.fit(interactions=sparse_train_ratings_4plus,
                      user_features=user_indicator_features,
                      item_features=item_indicator_features,
-                     n_sampled_items=int(n_items * .01))
+                     n_sampled_items=int(n_items * .01),
+                     user_batch_size=USER_BATCH_SIZE)
 
 # Check the results of the WMRB MF CF model
 print("WMRB matrix factorization collaborative filter:")
@@ -153,7 +156,8 @@ content_model = tensorrec.TensorRec(
 content_model.fit(interactions=sparse_train_ratings_4plus,
                   user_features=user_indicator_features,
                   item_features=movie_genre_features,
-                  n_sampled_items=int(n_items * .01))
+                  n_sampled_items=int(n_items * .01),
+                  user_batch_size=USER_BATCH_SIZE)
 
 # Check the results of the content-based model
 print("Content-based recommender:")
@@ -172,7 +176,8 @@ hybrid_model = tensorrec.TensorRec(
 hybrid_model.fit(interactions=sparse_train_ratings_4plus,
                  user_features=user_indicator_features,
                  item_features=full_item_features,
-                 n_sampled_items=int(n_items * .01))
+                 n_sampled_items=int(n_items * .01),
+                 user_batch_size=USER_BATCH_SIZE)
 
 print("Hybrid recommender:")
 predicted_ranks = hybrid_model.predict_rank(user_features=user_indicator_features,
